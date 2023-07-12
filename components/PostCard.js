@@ -6,7 +6,7 @@ export default function PostCard({ post }) {
         <Link href={post.uri} className={"card"}>
             <a className="card">
                 <h3>{post.title} &rarr;</h3>
-                {post.post_acf_data.shortDescription}
+                <span>{post.post_acf_data.shortDescription}</span>
             </a>
         </Link>
     )

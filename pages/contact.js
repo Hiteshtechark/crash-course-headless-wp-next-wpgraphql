@@ -7,11 +7,27 @@ export default function MyForm() {
         'your-email': '',
         'company-name': '',
         'your-phone': '',
-        'hobbies[]': '',
         'about-techark': '',
         'techark-desc': '',
         'techark-help': ''
     });
+
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+
+    const handleCheckboxChange = (event) => {
+        const { value, checked } = event.target;
+
+        setSelectedCheckboxes((prevSelectedCheckboxes) => {
+            if (checked) {
+                // Add the checkbox value to the array
+                return [...prevSelectedCheckboxes, value];
+            } else {
+                // Remove the checkbox value from the array
+                return prevSelectedCheckboxes.filter((checkboxValue) => checkboxValue !== value);
+            }
+        });
+    };
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,14 +41,17 @@ export default function MyForm() {
             formDataObj.append(key, formData[key]);
         }
 
-        try {
-            const response = await axios.post('https://techarkatlastg.wpengine.com/wp-json/contact-form-7/v1/contact-forms/123/feedback', formDataObj);
-            console.log(response);
+        const hobbies = "hobbies[]";
+        for (const key in selectedCheckboxes) {
+            formDataObj.append(hobbies, selectedCheckboxes[key]);
+        }
 
-            // Handle the successful response as needed
+        try {
+            
+            const response = await axios.post('https://techarkatlastg.wpengine.com/wp-json/contact-form-7/v1/contact-forms/123/feedback', formDataObj);     
+            
         } catch (error) {
-            console.error(error);
-            // Handle errors
+         
         }
     };
 
@@ -70,23 +89,23 @@ export default function MyForm() {
                         <legend>What are you looking to do?</legend>
                         <ul>
                             <li>
-                                <input id="styled-checkbox-1" name="hobbies[]" type="checkbox" value="Website Design" onChange={handleChange} />
+                                <input id="styled-checkbox-1" name="hobbies[]" type="checkbox" value="Website Design" onChange={handleCheckboxChange} />
                                 <label htmlFor="styled-checkbox-1">Website Design</label>
                             </li>
                             <li>
-                                <input id="styled-checkbox-2" name="hobbies[]" type="checkbox" value="App Development" onChange={handleChange} />
+                                <input id="styled-checkbox-2" name="hobbies[]" type="checkbox" value="App Development" onChange={handleCheckboxChange} />
                                 <label htmlFor="styled-checkbox-2">App Development</label>
                             </li>
                             <li>
-                                <input id="styled-checkbox-3" name="hobbies[]" type="checkbox" value="Software Development" onChange={handleChange} />
+                                <input id="styled-checkbox-3" name="hobbies[]" type="checkbox" value="Software Development" onChange={handleCheckboxChange} />
                                 <label htmlFor="styled-checkbox-3">Software Development</label>
                             </li>
                             <li>
-                                <input id="styled-checkbox-4" name="hobbies[]" type="checkbox" value="Digital Marketing" onChange={handleChange} />
+                                <input id="styled-checkbox-4" name="hobbies[]" type="checkbox" value="Digital Marketing" onChange={handleCheckboxChange} />
                                 <label htmlFor="styled-checkbox-4">Digital Marketing</label>
                             </li>
                             <li>
-                                <input id="styled-checkbox-5" name="hobbies[]" type="checkbox" value="Other" onChange={handleChange} />
+                                <input id="styled-checkbox-5" name="hobbies[]" type="checkbox" value="Other" onChange={handleCheckboxChange} />
                                 <label htmlFor="styled-checkbox-5">Other</label>
                             </li>
                         </ul>
