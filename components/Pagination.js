@@ -1,85 +1,110 @@
-import { useQuery, gql } from "@apollo/client";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 
-const GET_POSTS = gql`
-  query getPosts($first: Int!, $after: String) {
-    posts(first: $first, after: $after) {
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          id
-          databaseId
-          title
-          slug
-        }
-      }
-    }
-  }
-`;
+const Pagination = () => {
+  const [post, setPost] = useState([]);
+  const [number, setNumber] = useState(1); // No of pages
+  const [postPerPage] = useState(2);
 
-const BATCH_SIZE = 2;
+  useEffect(() => {
+    const fetchApi = async () => {
+      const data = await fetch("https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts/");
+      const dataJ = await data.json();
+      setPost(dataJ);
+    };
+    fetchApi();
+  }, []);
 
-export default function Pagination() {
-  const { data, loading, error, fetchMore } = useQuery(GET_POSTS, {
-    variables: { first: BATCH_SIZE, after: null },
-    notifyOnNetworkStatusChange: true,
-  });
+  const lastPost = number * postPerPage;
+  const firstPost = lastPost - postPerPage;
+  const currentPost = post.slice(firstPost, lastPost);
+  const pageNumber = [];
 
-  if (error) {
-    return <div><p>Sorry, an error happened. Reload Please</p></div>;
+  for (let i = 1; i <= Math.ceil(post.length / postPerPage); i++) {
+    pageNumber.push(i);
   }
 
-  if (!data && loading) {
-    return <div><p>Loading...</p></div>;
-  }
-
-  if (!data?.posts.edges.length) {
-    return <div><p>no posts have been published</p></div>;
-  }
-
-  const posts = data.posts.edges.map((edge) => edge.node);
-  const haveMorePosts = Boolean(data?.posts?.pageInfo?.hasNextPage);
-
+  const ChangePage = (pageNumber) => {
+    setNumber(pageNumber);
+  };
   return (
     <>
-      <ul style={{ padding: "0" }}>
-        {
-          posts.map((post) => {
-          const { databaseId, title, slug } = post;
-          return (
-            <li
-              key={databaseId}
-              style={{
-                border: "2px solid #ededed",
-                borderRadius: "10px",
-                padding: "2rem",
-                listStyle: "none",
-                marginBottom: "1rem",
-              }}
+      <div className="container-fluid">
+        <div className="row">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  S No.
+                </th>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Email
+                </th>
+                <th>
+                  Comment
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPost.map((Val) => {
+                return (
+                  <>
+                    <tr
+                      className="border-2 border-dark text-center"
+                      key={Val.id}
+                    >
+                      <td className="border-2 border-dark th-1">
+                        {Val.id}
+                      </td>
+                      <td className="border-2 border-dark th-1">
+                        {Val.title.rendered}
+                      </td>
+                      <td className="border-2 border-dark th-1">
+                        {Val.email}
+                      </td>
+                      <td className="border-2 border-dark th-1">
+                        {Val.body}
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <div className="my-3 text-center">
+            <button
+              className="px-3 py-1 m-1 text-center btn-primary"
+              onClick={() => setNumber(number - 1)}
             >
-              <Link href={`/${slug}`}>{title}</Link>
-            </li>
-          );
-        })}
-      </ul>      
-      {haveMorePosts ? (
-        <form
-          method="post"
-          onSubmit={(event) => {
-            event.preventDefault();
-            fetchMore({ variables: { after: data.posts.pageInfo.endCursor } });
-          }}
-        >
-          <button type="submit" disabled={loading}>
-            {loading ? "Loading..." : "Load more"}
-          </button>
-        </form>
-      ) : (
-        <p>✅ All posts loaded.</p>
-      )}
+              Previous
+            </button>
+
+            {pageNumber.map((Elem) => {
+              return (
+                <>
+                  <button
+                    className="px-3 py-1 m-1 text-center btn-outline-dark"
+                    onClick={() => ChangePage(Elem)}
+                  >
+                    {Elem}
+                  </button>
+                </>
+              );
+            })}
+            <button
+              className="px-3 py-1 m-1 text-center btn-primary"
+              onClick={() => setNumber(number + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
-}
+};
+
+export default Pagination;

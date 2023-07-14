@@ -4,15 +4,14 @@ import Pagination from '../components/Pagination';
 import { client } from '../lib/apollo';
 import { gql } from "@apollo/client";
 import React from 'react';
-import { usePagination, DOTS } from '../components/usePagination';
 
 export default function Blog2({ posts }) {
-  const total_pages = posts.length;
+ /*  const total_pages = posts.length;
   const num_results_on_page = 2;
   const page = 1;
 
   const p_pages = Math.ceil(total_pages / num_results_on_page);
-
+ */
   return (
     <>
       <div className="container">
@@ -29,7 +28,7 @@ export default function Blog2({ posts }) {
             Get started by editing <code>pages/index.js</code>
           </p>
           <div className="grid">
-            <Pagination></Pagination>
+            <Pagination all_post={posts} ></Pagination>
           </div>
         </main>
 
@@ -49,6 +48,7 @@ export async function getStaticProps() {
           content
           date
           uri
+          databaseId
           post_acf_data {
             shortDescription
           }
