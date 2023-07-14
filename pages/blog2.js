@@ -1,11 +1,18 @@
 import Head from 'next/head';
 import Footer from '../components/Footer';
-import PostCard from '../components/PostCard';
-import { getAllPosts } from '../lib/test-data';
+import Pagination from '../components/Pagination';
 import { client } from '../lib/apollo';
 import { gql } from "@apollo/client";
+import React from 'react';
+import { usePagination, DOTS } from '../components/usePagination';
 
-export default function Home({ posts }) {
+export default function Blog2({ posts }) {
+  const total_pages = posts.length;
+  const num_results_on_page = 2;
+  const page = 1;
+
+  const p_pages = Math.ceil(total_pages / num_results_on_page);
+
   return (
     <>
       <div className="container">
@@ -13,7 +20,6 @@ export default function Home({ posts }) {
           <title>Headless WP Next Starter</title>
           <link rel="icon" href="favicon.ico"></link>
         </Head>
-
         <main>
           <h1 className="title">
             Headless WordPress Next.js Starter
@@ -22,15 +28,8 @@ export default function Home({ posts }) {
           <p className="description">
             Get started by editing <code>pages/index.js</code>
           </p>
-
           <div className="grid">
-            {
-              posts.map((post) => {
-                return (
-                  <PostCard key={post.id} post={post}></PostCard>
-                )
-              })
-            }
+            <Pagination></Pagination>
           </div>
         </main>
 

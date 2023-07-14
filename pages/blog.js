@@ -1,11 +1,10 @@
 import Head from 'next/head';
 import Footer from '../components/Footer';
-import PostCard from '../components/PostCard';
-import { getAllPosts } from '../lib/test-data';
+import LoadMorePost from '../components/LoadMorePost';
 import { client } from '../lib/apollo';
 import { gql } from "@apollo/client";
 
-export default function Home({ posts }) {
+export default function Blog({ posts }) {
   return (
     <>
       <div className="container">
@@ -24,13 +23,7 @@ export default function Home({ posts }) {
           </p>
 
           <div className="grid">
-            {
-              posts.map((post) => {
-                return (
-                  <PostCard key={post.id} post={post}></PostCard>
-                )
-              })
-            }
+            <LoadMorePost></LoadMorePost>
           </div>
         </main>
 
