@@ -1,31 +1,52 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 
 const Pagination = () => {
+
+  const router = useRouter();
+  const { page } = router.query;
+
   const [post, setPost] = useState([]);
+  const [postAll, setAllPost] = useState([]);
   const [number, setNumber] = useState(1); // No of pages
   const [postPerPage] = useState(2);
+  
+  const API_url = "https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts?page=" + number + "&per_page=" + postPerPage;
 
   useEffect(() => {
     const fetchApi = async () => {
-      const data = await fetch("https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts/");
+      const data = await fetch(API_url);
       const dataJ = await data.json();
       setPost(dataJ);
     };
     fetchApi();
   }, []);
 
-  const lastPost = number * postPerPage;
-  const firstPost = lastPost - postPerPage;
-  const currentPost = post.slice(firstPost, lastPost);
+  const All_post_API_url = "https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts";
+
+  useEffect(() => {
+    const fetchall = async () => {
+      const data = await fetch(All_post_API_url);
+      const dataJ = await data.json();
+      setAllPost(dataJ);
+    };
+    fetchall();
+  }, []);
+
+
+  const currentPost = post;
   const pageNumber = [];
 
-  for (let i = 1; i <= Math.ceil(post.length / postPerPage); i++) {
+
+  for (let i = 1; i <= Math.ceil(postAll.length / postPerPage); i++) {
     pageNumber.push(i);
   }
 
-  const ChangePage = (pageNumber) => {
+  const ChangePage = (pageNumber, href_link) => {
     setNumber(pageNumber);
+    router.push(href_link);
   };
+
   return (
     <>
       <div className="container-fluid">
@@ -61,12 +82,6 @@ const Pagination = () => {
                       <td className="border-2 border-dark th-1">
                         {Val.title.rendered}
                       </td>
-                      <td className="border-2 border-dark th-1">
-                        {Val.email}
-                      </td>
-                      <td className="border-2 border-dark th-1">
-                        {Val.body}
-                      </td>
                     </tr>
                   </>
                 );
@@ -83,12 +98,10 @@ const Pagination = () => {
             </button>
 
             {pageNumber.map((Elem) => {
+              const href_link = "?page=" + Elem;
               return (
                 <>
-                  <button
-                    className="px-3 py-1 m-1 text-center btn-outline-dark"
-                    onClick={() => ChangePage(Elem)}
-                  >
+                  <button onClick={() => ChangePage(Elem, href_link)} className="px-3 py-1 m-1 text-center btn-outline-dark" key={Elem}>
                     {Elem}
                   </button>
                 </>
