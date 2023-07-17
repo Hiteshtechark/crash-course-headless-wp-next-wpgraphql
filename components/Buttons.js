@@ -1,10 +1,16 @@
 import React from "react";
-import Data from "../api//Data";
+//import Data from "../api//Data";
 
-const Buttons = ({ filterItem, setItem, menuItems }) => {
+const Buttons = ({ filterItem, setItem, menuItems, all_post }) => {
   return (
     <>
       <div className="d-flex justify-content-center">
+        <button
+          className="btn-dark text-white p-1 px-3 mx-5 fw-bold btn"
+          onClick={() => setItem(all_post)}
+        >
+          All
+        </button>
         {menuItems.map((Val, id) => {
           return (
             <button
@@ -16,31 +22,6 @@ const Buttons = ({ filterItem, setItem, menuItems }) => {
             </button>
           );
         })}
-        <button
-          className="btn-dark text-white p-1 px-3 mx-5 fw-bold btn"
-          onClick={() => setItem(Data)}
-        >
-          All
-        </button>
-
-        {/* <button
-          className="btn-warning text-white p-1 mx-5"
-          onClick={() => filterItem("Breakfast")}
-        >
-          Breakfast
-        </button>
-        <button
-          className="btn-warning text-white p-1 px-2 mx-5"
-          onClick={() => filterItem("Lunch")}
-        >
-          Lunch
-        </button>
-        <button
-          className="btn-warning text-white p-1 mx-5"
-          onClick={() => filterItem("Dinner")}
-        >
-          Dinner
-        </button> */}
       </div>
     </>
   );
