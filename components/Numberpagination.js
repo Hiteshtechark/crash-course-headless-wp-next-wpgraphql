@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 
-const Pagination = () => {
+const Numberpagination = () => {
 
-  const router = useRouter();
-  const { page } = router.query;
+  const router = useRouter(); 
 
   const [post, setPost] = useState([]);
+  const [isVisibleprev, setIsVisibleprev] = useState(true);
+  const [isVisiblenext, setIsVisiblenext] = useState(true);
   const [postAll, setAllPost] = useState([]);
-  const [number, setNumber] = useState(1); // No of pages
+  const [number, setNumber] = useState(1);
   const [postPerPage] = useState(2);
 
   const API_url = "https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts?page=" + number + "&per_page=" + postPerPage;
@@ -30,8 +31,15 @@ const Pagination = () => {
       setAllPost(dataJ);
     };
     fetchall();
+    setURL();
   }, []);
 
+  const setURL = () => {
+
+    const href_link_2 = "?page=" + 1;
+    router.push(href_link_2);
+
+  };
 
   const currentPost = post;
   const pageNumber = [];
@@ -41,13 +49,28 @@ const Pagination = () => {
   }
   const setPagenumber = (pageNumber) => {
     setNumber(pageNumber);
-    // router.push(href_link);
     fetchApi();
+
   };
 
   const ChangePage = (pageNumber, href_link) => {
     setNumber(pageNumber);
     router.push(href_link);
+    console.log(Math.ceil(postAll.length / postPerPage));
+    console.log(pageNumber);
+    if (Math.ceil(postAll.length / postPerPage) <= pageNumber || pageNumber > 1) {
+      setIsVisibleprev(false);
+    } else {
+      setIsVisibleprev(true);
+    }
+
+    if (Math.ceil(postAll.length / postPerPage) >= pageNumber || pageNumber < 1) {
+      setIsVisiblenext(false);
+    } else {
+      setIsVisiblenext(true);
+    }
+
+
     fetchApi();
   };
 
@@ -63,12 +86,6 @@ const Pagination = () => {
                 </th>
                 <th>
                   Name
-                </th>
-                <th>
-                  Email
-                </th>
-                <th>
-                  Comment
                 </th>
               </tr>
             </thead>
@@ -98,6 +115,7 @@ const Pagination = () => {
               className="px-3 py-1 m-1 text-center btn-primary"
               onClick={() => setPagenumber(number - 1)}
             >
+              {isVisibleprev ? 'Hide' : 'Show'}
               Previous
             </button>
 
@@ -114,7 +132,8 @@ const Pagination = () => {
             <button
               className="px-3 py-1 m-1 text-center btn-primary"
               onClick={() => setPagenumber(number + 1)}
-            >
+            >            
+            {isVisiblenext ? 'Show' : 'Hide'}
               Next
             </button>
           </div>
@@ -124,4 +143,4 @@ const Pagination = () => {
   );
 };
 
-export default Pagination;
+export default Numberpagination;
