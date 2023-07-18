@@ -10,17 +10,16 @@ const Pagination = () => {
   const [postAll, setAllPost] = useState([]);
   const [number, setNumber] = useState(1); // No of pages
   const [postPerPage] = useState(2);
-  
+
   const API_url = "https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts?page=" + number + "&per_page=" + postPerPage;
 
-  useEffect(() => {
-    const fetchApi = async () => {
-      const data = await fetch(API_url);
-      const dataJ = await data.json();
-      setPost(dataJ);
-    };
-    fetchApi();
-  }, []);
+  const fetchApi = async () => {
+    const data = await fetch(API_url);
+    const dataJ = await data.json();
+    setPost(dataJ);
+  }
+
+  fetchApi();
 
   const All_post_API_url = "https://techarkatlastg.wpengine.com/wp-json/wp/v2/posts";
 
@@ -41,10 +40,16 @@ const Pagination = () => {
   for (let i = 1; i <= Math.ceil(postAll.length / postPerPage); i++) {
     pageNumber.push(i);
   }
+  const setPagenumber = (pageNumber) => {
+    setNumber(pageNumber);
+   // router.push(href_link);
+    fetchApi();
+  };
 
   const ChangePage = (pageNumber, href_link) => {
     setNumber(pageNumber);
     router.push(href_link);
+    fetchApi();
   };
 
   return (
@@ -92,7 +97,7 @@ const Pagination = () => {
           <div className="my-3 text-center">
             <button
               className="px-3 py-1 m-1 text-center btn-primary"
-              onClick={() => setNumber(number - 1)}
+              onClick={() => setPagenumber(number - 1)}
             >
               Previous
             </button>
@@ -109,7 +114,7 @@ const Pagination = () => {
             })}
             <button
               className="px-3 py-1 m-1 text-center btn-primary"
-              onClick={() => setNumber(number + 1)}
+              onClick={() => setPagenumber(number + 1)}
             >
               Next
             </button>
