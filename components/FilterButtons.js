@@ -1,8 +1,7 @@
 import React from "react";
 //import Data from "../api//Data";
 
-const Buttons = ({ filterItem, setItem, menuItems, all_post }) => {
-  console.log(menuItems);
+const FilterButtons = ({ filterItem, setItem, menuItems, all_post }) => { 
   return (
     <>
       <div className="d-flex justify-content-center">
@@ -12,12 +11,11 @@ const Buttons = ({ filterItem, setItem, menuItems, all_post }) => {
         >
           All
         </button>
-        {menuItems.map((Val, id) => {
+        {menuItems.map((Val) => {
           return (
             <button
               className="btn-dark text-white p-1 px-2 mx-5 btn fw-bold"
               onClick={() => filterItem(Val)}
-              key={id}
             >
               {Val}
             </button>
@@ -28,4 +26,4 @@ const Buttons = ({ filterItem, setItem, menuItems, all_post }) => {
   );
 };
 
-export default Buttons;
+export default FilterButtons;

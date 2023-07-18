@@ -3,23 +3,27 @@ import Footer from '../components/Footer';
 import React, { useState } from "react";
 //import Data from "../api//Data";
 import Card from "../components/Card";
-import Buttons from "../components/Buttons";
+import FilterButtons from "../components/FilterButtons";
 import { client } from '../lib/apollo';
 import { gql } from "@apollo/client";
 
-export default function Filter({ posts, cat }) {
+export default function FilterCPT({ posts, cat }) {
 
-  const [item, setItem] = useState(posts);  
-  const menuItems = [...new Set(cat.map((Val) => Val.name))];
+  const catdata = cat.map((Val) => {
+    for (let i = 0; i < Val['jobCategory']['nodes'].length; i++) {
+      return Val['jobCategory']['nodes'][i].name;
+    }
+  });
+
+  const [item, setItem] = useState(posts);
+  const menuItems = [...new Set(catdata)];
 
   const filterItem = (curcat) => {
     const newItem = posts.filter((newVal) => {
-      for (const key in newVal['categories']) {
-        for (let i = 0; i < newVal['categories']['nodes'].length; i++) {
-          if (newVal['categories']['nodes'][i].name === curcat) {
-           return newVal['categories']['nodes'][i].name;
-          }
-        }       
+      for (let i = 0; i < newVal['jobCategory']['nodes'].length; i++) {
+        if (newVal['jobCategory']['nodes'][i].name === curcat) {
+          return newVal['jobCategory']['nodes'][i].name;
+        }
       }
     });
     setItem(newItem);
@@ -34,7 +38,7 @@ export default function Filter({ posts, cat }) {
         </Head>
         <main>
           <h1 className="col-12 text-center my-3 fw-bold">Our Menu</h1>
-          <Buttons
+          <FilterButtons
             filterItem={filterItem}
             setItem={setItem}
             menuItems={menuItems}
@@ -52,40 +56,39 @@ export async function getStaticProps() {
 
   // Paste your GraphQL query inside of a gql tagged template literal
   const GET_POSTS = gql`
-    query getPosts {
-      posts {
-        nodes {
-          id
-          title
-          content
-          categories {
-            nodes {            
-              slug
-              name
-            }
+  query getPosts {
+    jobs {
+      nodes {
+        id
+        title
+        content
+        jobCategory {
+          nodes {
+            slug
+            name
           }
-          featuredImage {
-            node {
-              sourceUrl
-            }
-          }
-        }
+        }      
       }
     }
+  }
   `;
 
   const response = await client.query({
     query: GET_POSTS
   });
 
-  const posts = response?.data?.posts?.nodes;
+  const posts = response?.data?.jobs?.nodes;
 
   const GET_CATEGORIES = gql`
     query GetCategories {
-      categories {
+      jobs {
         nodes {
-          name
-          slug
+          jobCategory {
+            nodes {
+              name
+              slug
+            }
+          }
         }
       }
     }
@@ -95,7 +98,7 @@ export async function getStaticProps() {
     query: GET_CATEGORIES
   });
 
-  const cat = cat_response?.data?.categories?.nodes;
+  const cat = cat_response?.data?.jobs?.nodes;
 
   return {
     props: {
