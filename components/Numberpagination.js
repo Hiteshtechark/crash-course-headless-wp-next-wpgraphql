@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
+import $ from 'jquery';
 
 const Numberpagination = () => {
 
-  const router = useRouter(); 
+  const router = useRouter();
 
   const [post, setPost] = useState([]);
   const [isVisibleprev, setIsVisibleprev] = useState(true);
@@ -47,31 +48,32 @@ const Numberpagination = () => {
   for (let i = 1; i <= Math.ceil(postAll.length / postPerPage); i++) {
     pageNumber.push(i);
   }
-  const setPagenumber = (pageNumber) => {
+  const setPagenumber = (pageNumber, e) => {
     setNumber(pageNumber);
+    console.log(e);
     fetchApi();
 
   };
 
-  const ChangePage = (pageNumber, href_link) => {
+  const ChangePage = (pageNumber, href_link, elementRef) => {
+
     setNumber(pageNumber);
-    router.push(href_link);
-    console.log(Math.ceil(postAll.length / postPerPage));
-    console.log(pageNumber);
+    router.push(href_link);    
+    elementRef.target.classList.add('active');
     if (Math.ceil(postAll.length / postPerPage) <= pageNumber || pageNumber > 1) {
       setIsVisibleprev(false);
     } else {
       setIsVisibleprev(true);
     }
 
-    if (Math.ceil(postAll.length / postPerPage) >= pageNumber || pageNumber < 1) {
-      setIsVisiblenext(false);
-    } else {
+    if (Math.ceil(postAll.length / postPerPage) > pageNumber) {
       setIsVisiblenext(true);
+    } else {
+      setIsVisiblenext(false);
     }
 
-
     fetchApi();
+
   };
 
   return (
@@ -111,9 +113,9 @@ const Numberpagination = () => {
           </table>
 
           <div className="my-3 text-center">
-            <button
+            <button id="prev-btn"
               className="px-3 py-1 m-1 text-center btn-primary"
-              onClick={() => setPagenumber(number - 1)}
+              onClick={(e) => setPagenumber(number - 1, e)}
             >
               {isVisibleprev ? 'Hide' : 'Show'}
               Previous
@@ -123,17 +125,17 @@ const Numberpagination = () => {
               const href_link = "?page=" + Elem;
               return (
                 <>
-                  <button onClick={() => ChangePage(Elem, href_link)} className="px-3 py-1 m-1 text-center btn-outline-dark" key={Elem}>
+                  <button onClick={(elementRef) => ChangePage(Elem, href_link, elementRef)} className="page px-3 py-1 m-1 text-center btn-outline-dark" key={Elem}>
                     {Elem}
                   </button>
                 </>
               );
             })}
             <button
-              className="px-3 py-1 m-1 text-center btn-primary"
+              className="next-btn px-3 py-1 m-1 text-center btn-primary"
               onClick={() => setPagenumber(number + 1)}
-            >            
-            {isVisiblenext ? 'Show' : 'Hide'}
+            >
+              {isVisiblenext ? 'Show' : 'Hide'}
               Next
             </button>
           </div>
